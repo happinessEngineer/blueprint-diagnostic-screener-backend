@@ -1,6 +1,7 @@
 import express, { Request, Response, NextFunction, ErrorRequestHandler } from 'express';
 import cors from 'cors';
 import { Answer, getAssessments } from './scoring';
+import { screenerConfig } from './screenerConfig';
 
 interface RequestBody {
   answers: Answer[];
@@ -31,28 +32,33 @@ app.use(cors({
   }
 }));
 
-app.post('/assessment-submissions', (req: Request, res: Response) => {
-    const body = req.body as RequestBody;
-    console.log('Received request:', body);
+app.get('/screener-config', (req: Request, res: Response) => {
+  console.log('Received request: screener config');
+  res.json(screenerConfig);
+});
 
-    if (!body || typeof body !== 'object' || !body.answers || !Array.isArray(body.answers)) {
-      console.error('Invalid input format:', body);
-      res.status(400).json({ error: 'Invalid input format. Expected { answers: [...] }' });
-      return;
+app.post('/assessment-submissions', (req: Request, res: Response) => {
+  const body = req.body as RequestBody;
+  console.log('Received request:', body);
+
+  if (!body || typeof body !== 'object' || !body.answers || !Array.isArray(body.answers)) {
+    console.error('Invalid input format:', body);
+    res.status(400).json({ error: 'Invalid input format. Expected { answers: [...] }' });
+    return;
+  }
+
+  try {
+    const assessments = getAssessments(body.answers);
+    console.log('Generated assessments:', assessments);
+    res.json({ results: assessments });
+  } catch (error) {
+    if (error instanceof Error) {
+      console.error('Error processing assessments:', error.message);
+      res.status(400).json({ error: error.message });
+    } else {
+      res.status(400).json({ error: 'An unknown error occurred' });
     }
-  
-    try {
-      const assessments = getAssessments(body.answers);  
-      console.log('Generated assessments:', assessments);
-      res.json({ results: assessments });
-    } catch (error) {
-      if (error instanceof Error) {
-        console.error('Error processing assessments:', error.message);
-        res.status(400).json({ error: error.message });
-      } else {
-        res.status(400).json({ error: 'An unknown error occurred' });
-      }
-    }
+  }
 });
 
 app.listen(PORT, () => {
