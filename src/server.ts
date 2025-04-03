@@ -1,4 +1,5 @@
 import express, { Request, Response, NextFunction, ErrorRequestHandler } from 'express';
+import cors from 'cors';
 import { Answer, getAssessments } from './scoring';
 
 interface RequestBody {
@@ -17,8 +18,18 @@ const jsonErrorHandler: ErrorRequestHandler = (err: SyntaxError, req: Request, r
   next();
 };
 
+const allowedOrigins = ['http://localhost:5173', 'https://happinessengineer.github.io'];
+
 app.use(express.json());
 app.use(jsonErrorHandler);
+app.use(cors({
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.indexOf(origin) === -1) {
+      return callback(new Error('Origin not allowed by CORS'));
+    }
+    return callback(null, true);
+  }
+}));
 
 app.post('/assessment-submissions', (req: Request, res: Response) => {
     const body = req.body as RequestBody;
