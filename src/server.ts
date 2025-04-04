@@ -21,8 +21,6 @@ const jsonErrorHandler: ErrorRequestHandler = (err: SyntaxError, req: Request, r
 
 const allowedOrigins = ['http://localhost:5173', 'https://happinessengineer.github.io'];
 
-app.use(express.json());
-app.use(jsonErrorHandler);
 app.use(cors({
   origin: function (origin, callback) {
     if (!origin || allowedOrigins.indexOf(origin) === -1) {
@@ -31,6 +29,8 @@ app.use(cors({
     return callback(null, true);
   }
 }));
+app.use(express.json());
+app.use(jsonErrorHandler);
 
 app.get('/screener-config', (req: Request, res: Response) => {
   console.log('Received request: screener config');
