@@ -1,5 +1,4 @@
-import fs from 'fs';
-import path from 'path';
+import domainMappings from './domainMapping.json';
 
 export interface Answer {
   value: number;
@@ -19,11 +18,6 @@ interface AssessmentCriteria {
   threshold: number;
   assessment: string;
 }
-
-const domainMappingPath = path.join(__dirname, 'domainMapping.json');
-const domainMappings: DomainMapping[] = JSON.parse(
-  fs.readFileSync(domainMappingPath, 'utf-8')
-);
 
 const assessmentCriteria: { [key: string]: AssessmentCriteria } = {
   depression: { threshold: 2, assessment: 'PHQ-9' },
