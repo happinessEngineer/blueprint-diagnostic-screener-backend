@@ -1,4 +1,5 @@
-import { getAssessments, Answer } from './scoring';
+import { getAssessments } from '../src/scoring';
+import { testCases } from '../src/testHelpers';
 
 // Mock the fs module to avoid file system operations during tests
 jest.mock('fs', () => ({
@@ -21,18 +22,7 @@ describe('getAssessments', () => {
   });
 
   test('should return correct assessments based on domain scores', () => {
-    const answers: Answer[] = [
-      { question_id: 'question_a', value: 3 }, // depression: 3
-      { question_id: 'question_b', value: 2 }, // depression: 5
-      { question_id: 'question_c', value: 1 }, // mania: 1
-      { question_id: 'question_d', value: 2 }, // mania: 3
-      { question_id: 'question_e', value: 0 }, // anxiety: 0
-      { question_id: 'question_f', value: 1 }, // anxiety: 1
-      { question_id: 'question_g', value: 2 }, // anxiety: 3
-      { question_id: 'question_h', value: 0 }  // substance_use: 0
-    ];
-
-    const result = getAssessments(answers);
+    const result = getAssessments(testCases.validAnswers);
     
     // Based on thresholds:
     // depression: 5 >= 2 -> PHQ-9
@@ -48,40 +38,21 @@ describe('getAssessments', () => {
   });
 
   test('should throw error for invalid answer values', () => {
-    const answers: Answer[] = [
-      { question_id: 'question_a', value: 5 }, // Invalid value > 4
-      { question_id: 'question_b', value: 2 }
-    ];
-
-    expect(() => getAssessments(answers)).toThrow('Invalid value for question question_a');
+    expect(() => getAssessments(testCases.invalidAnswers)).toThrow('Invalid value for question question_a');
   });
 
   test('should throw error for unknown question_id', () => {
-    const answers: Answer[] = [
-      { question_id: 'unknown_question', value: 2 }
-    ];
-
-    expect(() => getAssessments(answers)).toThrow('Unknown question_id: unknown_question');
+    expect(() => getAssessments(testCases.unknownQuestionAnswers)).toThrow('Unknown question_id: unknown_question');
   });
 
   test('should return ASSIST for substance_use threshold', () => {
-    const answers: Answer[] = [
-      { question_id: 'question_h', value: 1 } // substance_use: 1 (threshold is 1)
-    ];
-
-    const result = getAssessments(answers);
+    const result = getAssessments(testCases.substanceUseAnswers);
     expect(result).toContain('ASSIST');
     expect(result.length).toBe(1);
   });
 
   test('should handle all domains exceeding thresholds', () => {
-    const answers: Answer[] = [
-      { question_id: 'question_a', value: 3 }, // depression: 3
-      { question_id: 'question_c', value: 3 }, // mania: 3
-      { question_id: 'question_h', value: 2 }  // substance_use: 2
-    ];
-
-    const result = getAssessments(answers);
+    const result = getAssessments(testCases.allDomainsExceedingThresholds);
     
     // All domains exceed their thresholds
     expect(result).toContain('PHQ-9');

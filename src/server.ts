@@ -7,7 +7,7 @@ interface RequestBody {
   answers: Answer[];
 }
 
-const app = express();
+export const app = express();
 const PORT = process.env.PORT || 3000;
 
 const jsonErrorHandler: ErrorRequestHandler = (err: SyntaxError, req: Request, res: Response, next: NextFunction) => {
@@ -26,7 +26,7 @@ app.use(jsonErrorHandler);
 app.use(cors({
   origin: function (origin, callback) {
     if (!origin || allowedOrigins.indexOf(origin) === -1) {
-      return callback(new Error('Origin not allowed by CORS'));
+      return callback(null, false); // Deny the request
     }
     return callback(null, true);
   }
@@ -41,9 +41,9 @@ app.post('/assessment-submissions', (req: Request, res: Response) => {
   const body = req.body as RequestBody;
   console.log('Received request:', body);
 
-  if (!body || typeof body !== 'object' || !body.answers || !Array.isArray(body.answers)) {
+  if (!body || typeof body !== 'object' || !body.answers || !Array.isArray(body.answers) || body.answers.length === 0) {
     console.error('Invalid input format:', body);
-    res.status(400).json({ error: 'Invalid input format. Expected { answers: [...] }' });
+    res.status(400).json({ error: 'Invalid input format. Expected { answers: [...] } with at least one answer' });
     return;
   }
 
@@ -61,6 +61,6 @@ app.post('/assessment-submissions', (req: Request, res: Response) => {
   }
 });
 
-app.listen(PORT, () => {
+export const server = app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
