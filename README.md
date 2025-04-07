@@ -130,9 +130,9 @@ Unfortunately I'm not allowed to share any code that I've written at my past few
 
 [Braze Reporting ETL - Design Doc.md](Braze%20Reporting%20ETL%20-%20Design%20Doc.md)
 
-I implemented the project as well, which involved 4 of our microservices and Braze (our third-party Customer Experience Platform).
+I implemented the project as well, which involved 4 of our microservices and our third-party Customer Experience Platform.
 
-I'll also share the code for my [public profile website](https://github.com/happinessEngineer/me). I designed and built it in about 3 hours, using ChatGPT, Windsurf, Astro and Tailwind.
+I'll also share the [code](https://github.com/happinessEngineer/me) for my public profile website. I designed and built it in about 3 hours, using ChatGPT, Windsurf, Astro and Tailwind.
 
 I believe that being able to build a working solution quickly is crucial for a growth engineer, so I'm sharing this code as an example of that.
 
