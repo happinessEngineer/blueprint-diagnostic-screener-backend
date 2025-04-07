@@ -8,7 +8,7 @@ Create an API that accepts a patient's answers to a diagnostic screener, scores 
 
 ### Solution
 This application provides:
-- A RESTful API for processing diagnostic screener submissions
+- A RESTful API for serving the screener configuration and processing diagnostic screener submissions
 - Domain-based scoring logic for different symptom categories
 - Database persistence for assessment submissions
 - Comprehensive test coverage for both unit and integration tests
@@ -25,7 +25,7 @@ To start the development server, run the following command in your terminal:
 
 ## Configuration
 
-The application uses a centralized configuration system in `src/config.ts`. The configuration is loaded from environment variables with sensible defaults.
+The application uses a centralized configuration system in `src/config.ts`. The configuration is loaded from environment variables.
 
 ### Environment Variables
 
@@ -97,10 +97,10 @@ Example response:
 I would deploy this application according to the established processes of Blueprint's engineering team. I expect this would include:
 
 1. **Cloud-based hosting** using a service like AWS, GCP, or Azure
-2. **Database hosting** using a managed PostgreSQL service
+2. **Database hosting** using a cloud-based PostgreSQL service
 3. **CI/CD pipeline** for automated testing and deployment
 4. **Monitoring and logging** for observability
-5. **Reliability and scaling** through load balancing and auto-scaling features offered by cloud providers
+5. **Reliability and scaling** through load balancing and auto-scaling features
 6. **Infrastructure management** using infrastructure-as-code tools such as Terraform
 7. **Secrets management** using a tool such as AWS Secrets Manager to store the database credentials
 
@@ -124,3 +124,17 @@ I would deploy this application according to the established processes of Bluepr
 4. **Add API documentation**:
    - Implement OpenAPI/Swagger documentation
    - Add health check endpoints
+
+### Code I'm proud of
+Unfortunately I'm not allowed to share any code that I've written at my past few jobs. Instead, I'll share an engineering design doc that I wrote for a fairly complex ETL project:
+
+[Braze Reporting ETL - Design Doc.md](Braze%20Reporting%20ETL%20-%20Design%20Doc.md)
+
+I implemented the project as well, which involved 4 of our microservices and Braze (our third-party Customer Experience Platform).
+
+I'll also share the code for my [public profile website](https://github.com/happinessEngineer/me). I designed and built it in about 3 hours, using ChatGPT, Windsurf, Astro and Tailwind.
+
+I believe that being able to build a working solution quickly is crucial for a growth engineer, so I'm sharing this code as an example of that.
+
+### My public profile
+https://happinessengineer.github.io/me/
