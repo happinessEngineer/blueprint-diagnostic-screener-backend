@@ -3,6 +3,7 @@ import cors from 'cors';
 import { Answer, getAssessments } from './scoring';
 import { screenerConfig } from './screenerConfig';
 import { saveAssessmentSubmission } from './db';
+import config from './config';
 
 interface RequestBody {
   answers: Answer[];
@@ -10,7 +11,7 @@ interface RequestBody {
 }
 
 export const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = config.port;
 
 const jsonErrorHandler: ErrorRequestHandler = (err: SyntaxError, req: Request, res: Response, next: NextFunction) => {
   if (err instanceof SyntaxError && 'body' in err) {
@@ -21,11 +22,9 @@ const jsonErrorHandler: ErrorRequestHandler = (err: SyntaxError, req: Request, r
   next();
 };
 
-const allowedOrigins = ['http://localhost:5173', 'https://happinessengineer.github.io'];
-
 app.use(cors({
   origin: function (origin, callback) {
-    if (!origin || allowedOrigins.indexOf(origin) === -1) {
+    if (!origin || config.cors.allowedOrigins.indexOf(origin) === -1) {
       return callback(null, false); // Deny the request
     }
     return callback(null, true);

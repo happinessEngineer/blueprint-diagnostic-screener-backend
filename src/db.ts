@@ -1,16 +1,14 @@
 import { Answer } from './scoring';
 import { Sequelize, Model, DataTypes } from 'sequelize';
-import dotenv from 'dotenv';
+import config from './config';
 
-dotenv.config();
-
-const sequelize = new Sequelize(process.env.DATABASE_URL || 'postgres://postgres:postgres@localhost:5432/screener', {
+const sequelize = new Sequelize(config.database.url, {
   dialect: 'postgres',
   logging: false,
   dialectOptions: {
     ssl: {
       require: true,
-      rejectUnauthorized: false
+      rejectUnauthorized: false // Required for Heroku/render.com style hosted PostgreSQL
     }
   }
 });
