@@ -1,6 +1,24 @@
 import request from 'supertest';
 import { app, server } from '../src/server';
 import { testCases } from '../src/testHelpers';
+import { AssessmentSubmission } from '../src/db';
+
+// Mock the database module
+jest.mock('../src/db', () => {
+  const mockSaveAssessmentSubmission = jest.fn().mockImplementation((answers, patientId) => {
+    return Promise.resolve({
+      id: 1,
+      patient_id: patientId || 'default-patient-id',
+      answers: answers,
+      submitted_at: new Date()
+    });
+  });
+  
+  return {
+    saveAssessmentSubmission: mockSaveAssessmentSubmission,
+    AssessmentSubmission: jest.fn()
+  };
+});
 
 describe('Server Endpoints', () => {
   describe('GET /screener-config', () => {
@@ -97,6 +115,49 @@ describe('Server Endpoints', () => {
       expect(response.body.results).toContain('ASSIST');
       expect(response.body.results).toContain('ASRM');
       expect(response.body.results.length).toBe(3);
+    });
+
+    it('should save answers to database when patientId is provided', async () => {
+      const { saveAssessmentSubmission } = require('../src/db');
+      
+      const response = await request(app)
+        .post('/assessment-submissions')
+        .send({ 
+          patientId: 'test-patient-id',
+          answers: testCases.validAnswers 
+        })
+        .set('Content-Type', 'application/json');
+      
+      expect(response.status).toBe(200);
+      expect(saveAssessmentSubmission).toHaveBeenCalledWith(testCases.validAnswers, 'test-patient-id');
+    });
+
+    it('should save answers with generated UUID when patientId is not provided', async () => {
+      const { saveAssessmentSubmission } = require('../src/db');
+      
+      const response = await request(app)
+        .post('/assessment-submissions')
+        .send({ answers: testCases.validAnswers })
+        .set('Content-Type', 'application/json');
+      
+      expect(response.status).toBe(200);    
+      expect(saveAssessmentSubmission).toHaveBeenCalledWith(testCases.validAnswers, undefined);
+    });
+
+    it('should still return results even if database save fails', async () => {
+      const { saveAssessmentSubmission } = require('../src/db');
+      saveAssessmentSubmission.mockRejectedValueOnce(new Error('Database error'));
+      
+      const response = await request(app)
+        .post('/assessment-submissions')
+        .send({ 
+          patientId: 'test-patient-id',
+          answers: testCases.validAnswers 
+        })
+        .set('Content-Type', 'application/json');
+      
+      expect(response.status).toBe(200);
+      expect(response.body.results).toBeDefined();
     });
 
     it('should handle CORS headers correctly', async () => {

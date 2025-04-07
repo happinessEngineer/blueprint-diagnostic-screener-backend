@@ -2,9 +2,11 @@ import express, { Request, Response, NextFunction, ErrorRequestHandler } from 'e
 import cors from 'cors';
 import { Answer, getAssessments } from './scoring';
 import { screenerConfig } from './screenerConfig';
+import { saveAssessmentSubmission } from './db';
 
 interface RequestBody {
   answers: Answer[];
+  patientId?: string;
 }
 
 export const app = express();
@@ -37,7 +39,7 @@ app.get('/screener-config', (req: Request, res: Response) => {
   res.json(screenerConfig);
 });
 
-app.post('/assessment-submissions', (req: Request, res: Response) => {
+app.post('/assessment-submissions', async (req: Request, res: Response) => {
   const body = req.body as RequestBody;
   console.log('Received request:', body);
 
@@ -50,6 +52,15 @@ app.post('/assessment-submissions', (req: Request, res: Response) => {
   try {
     const assessments = getAssessments(body.answers);
     console.log('Generated assessments:', assessments);
+    
+    try {
+      await saveAssessmentSubmission(body.answers, body.patientId);
+      console.log('Saved assessment submission to database');
+    } catch (dbError) {
+      console.error('Database error:', dbError);
+      // Continue with the response even if saving fails
+    }
+    
     res.json({ results: assessments });
   } catch (error) {
     if (error instanceof Error) {
