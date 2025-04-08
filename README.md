@@ -128,7 +128,7 @@ I would deploy this application according to the established processes of Bluepr
 ### Code I'm proud of
 Unfortunately I'm not allowed to share any code that I've written at my past few jobs. Instead, I'll share an engineering design doc that I wrote for a fairly complex ETL project:
 
-[Braze Reporting ETL - Design Doc.md](Braze%20Reporting%20ETL%20-%20Design%20Doc.md)
+[Braze Reporting ETL - Design Doc.md](./docs/Braze%20Reporting%20ETL%20-%20Design%20Doc.md)
 
 I implemented the project as well, which involved 4 of our microservices and our third-party Customer Experience Platform.
 
